@@ -29,15 +29,14 @@ const PasswordSchema = Joi.object({
 
 // 상품 생성 api
 router.post("/products", async (req, res, next) => {
-  try {
+ 
     const validation = await productSchema.validateAsync(req.body, {
       abortEarly: false,
     });
     const { name, description, manager, password } = validation;
 
     const product = new Data({ name, description, manager, password });
-    product.updatedAt = Date.now();
-    product.createdAt = Date.now();
+
 
     const existingProduct = await Data.findOne({ name }).exec();
 
@@ -59,13 +58,7 @@ router.post("/products", async (req, res, next) => {
         message: "상품 등록에 성공하였습니다.",
         data: product,
       });
-  } catch (err) {
-    next(err);
-    return res.status(500).json({
-      message: "예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.",
-    });
-  }
-});
+  } );
 
 // 상품 목록 조회 api
 
@@ -73,14 +66,13 @@ router.get("/products", async (req, res) => {
   try {
     const datas = await Data.find({}, "-password") //비밀번호를 제외하고 조회합니다.
       .sort({ updatedAt: -1 }) //최신 순(내림차순)으로 조회합니다.
-      .select("name description manager status createdAt updatedAt")
       .exec();
-    const products = await Data.find().exec();
+  
 
     return res.status(200).json({
       status: 200,
       message: "상품 목록 조회에 성공했습니다.",
-      products: products.length ? products : [],
+      products: datas,
     });
   } catch (err) {
     next(err);
@@ -99,7 +91,6 @@ router.get("/products/:productId", async (req, res) => {
   // 상품 ID를 전달받습니다.
   try {
     const datas = await Data.findById(productId, "-password") // 비밀번호를 제외하고 조회합니다.
-      .select("name description manager status createdAt updatedAt")
       .exec();
     if (!datas) {
       return res
@@ -157,8 +148,6 @@ router.put("/products/:productId", async (req, res) => {
     product.status = status;
     product.password = password;
 
-    // 수정을 일시 업데이트합니다
-    product.updatedAt = Date.now();
 
     // 상품을 저장합니다.
     await product.save();
