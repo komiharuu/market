@@ -35,7 +35,7 @@ router.post("/products", async (req, res, next) => {
     });
     const { name, description, manager, password } = validation;
 
-    const product = new Data({ name, description, manager, password });
+ try{ const product = new Data({ name, description, manager, password });
 
 
     const existingProduct = await Data.findOne({ name }).exec();
@@ -58,6 +58,9 @@ router.post("/products", async (req, res, next) => {
         message: "상품 등록에 성공하였습니다.",
         data: product,
       });
+    } catch (err){
+      next(err);
+    }
   } );
 
 // 상품 목록 조회 api
@@ -69,7 +72,7 @@ router.get("/products", async (req, res) => {
       .exec();
 
       
-      if (datas.length === 0) {
+      if (!datas) {
         return res.status(200).json({
           products: [],
         });
@@ -82,10 +85,6 @@ router.get("/products", async (req, res) => {
     });
   } catch (err) {
     next(err);
-    return res.status(500).json({
-      status: 500,
-      message: "예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.",
-    });
   }
 });
 
@@ -111,10 +110,7 @@ router.get("/products/:productId", async (req, res) => {
     });
   } catch (err) {
     next(err);
-    return res.status(500).json({
-      status: 500,
-      message: "예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.",
-    });
+    
   }
 });
 
@@ -167,11 +163,6 @@ router.put("/products/:productId", async (req, res) => {
       });
   } catch (err) {
     next(err);
-    return res
-      .status(500)
-      .json({
-        error: "예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.",
-      });
   }
 });
 
@@ -218,12 +209,7 @@ router.delete("/products/:productId", async (req, res) => {
         data: product,
       });
   } catch (err) {
-    console.error(err);
-    return res
-      .status(500)
-      .json({
-        error: "예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요.",
-      });
+    next(err);
   }
 });
 

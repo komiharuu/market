@@ -9,5 +9,5 @@ export default function (err, req, res, next) {
   // 그 외의 에러가 발생하면, 서버 에러로 처리합니다.
   return res
     .status(500)
-    .json({ errorMessage: "서버에서 에러가 발생하였습니다." });
+    .json({ errorMessage: "예상치 못한 에러가 발생했습니다. 관리자에게 문의해 주세요." });
 }
