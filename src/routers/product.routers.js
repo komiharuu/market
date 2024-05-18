@@ -67,7 +67,13 @@ router.get("/products", async (req, res) => {
     const datas = await Data.find({}, "-password") //비밀번호를 제외하고 조회합니다.
       .sort({ updatedAt: -1 }) //최신 순(내림차순)으로 조회합니다.
       .exec();
-  
+
+      
+      if (datas.length === 0) {
+        return res.status(200).json({
+          products: [],
+        });
+      }
 
     return res.status(200).json({
       status: 200,
